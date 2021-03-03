@@ -19,12 +19,13 @@ class TabViewContainer extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            select: 'multi',
+            type: 'multi',
             searchResults: [],
             searchResultText: 'Please enter a search',
             tab: 'movies',
             tabID: 0,
-            query: ''
+            query: '',
+            currentPage: 1
         }
 
         this.getData = this.getData.bind(this)
@@ -32,6 +33,7 @@ class TabViewContainer extends Component {
         this.handleChange = this.handleChange.bind(this)
         this.handleSelect = this.handleSelect.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
+        this.nextPage = this.nextPage.bind(this)
     }
 
     async getData(type, query) {
@@ -39,7 +41,25 @@ class TabViewContainer extends Component {
         if (result.data.total_results > 0) {
             this.setState(() => ({
                 searchResults: result.data.results,
-                searchResultText: ''
+                searchResultText: '',
+                totalResults: result.data.total_results
+            }))
+        } else {
+            this.setState(() => ({
+                searchResults: [],
+                searchResultText: 'Sorry, there were no results',
+                totalResults: 0
+            }))
+        }
+    }
+
+    async nextPage(type, query, pageNumber) {
+        const result = await api.get(`/search/${type}?language=en-US&query=${query}&page=${pageNumber}`)
+        if (result.data.total_results > 0) {
+            this.setState(() => ({
+                searchResults: result.data.results,
+                searchResultText: '',
+                currentPage: pageNumber
             }))
         } else {
             this.setState(() => ({
@@ -74,7 +94,7 @@ class TabViewContainer extends Component {
 
     handleSelect(e) {
         this.setState({
-            select: e.target.value
+            type: e.target.value
         })
     }
 
@@ -83,7 +103,7 @@ class TabViewContainer extends Component {
         this.changeTab(e, 1)
 
         if (this.state.query !== '') {
-            this.getData(this.state.select, this.state.query)
+            this.getData(this.state.type, this.state.query)
         } else {
             this.setState(() => ({
                 searchResultText: 'Please enter a search'
@@ -131,6 +151,11 @@ class TabViewContainer extends Component {
                                 <SearchTab
                                     searchResult={this.state.searchResults}
                                     searchResultText={this.state.searchResultText}
+                                    nextPage={this.nextPage}
+                                    totalResults={this.state.totalResults}
+                                    currentPage={this.state.currentPage}
+                                    query={this.state.query}
+                                    type={this.state.type}
                                 />
                                 : ''
                         }
