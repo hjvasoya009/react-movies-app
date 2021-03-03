@@ -1,18 +1,30 @@
 import React, { Component } from 'react'
-import SearchForm from './components/SearchForm';
-// import './App.css';
-import DataContainer from './containers/DataContainer';
+import styled from 'styled-components'
+import TabViewContainer from './containers/TabViewContainer';
 
-export default class App extends Component {
+class App extends Component {
 	render() {
 		return (
-			<div className="App">
+			<AppContainer className="App">
 				<header className="App-header">
-					<h1 className="App-title">React Movies App</h1>
-					<SearchForm />
-					<DataContainer />
+					<h1 className="appTitle">React Movies App</h1>
 				</header>
-			</div>
+				<TabViewContainer />
+			</AppContainer>
 		)
 	}
 }
+
+const AppContainer = styled.div`
+    max-width: 1500px;
+    margin: 0 auto;
+
+	.appTitle {
+		text-align: center;
+		border: 5px solid #000;
+		padding: 1rem;
+		margin-bottom: 5rem;
+	}
+`;
+
+export default App;
